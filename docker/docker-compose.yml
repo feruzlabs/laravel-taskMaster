@@ -1,0 +1,53 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: taskuser
+      POSTGRES_PASSWORD: taskpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend/Dockerfile
+    env_file:
+      - ./backend.env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_DATABASE: taskmanager
+      DB_USERNAME: taskuser
+      DB_PASSWORD: taskpass
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ../backend:/var/www:delegated
+      - /var/www/vendor
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend/Dockerfile
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000/api/v1
+    command: sh -lc "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+
+volumes:
+  db_data: 
