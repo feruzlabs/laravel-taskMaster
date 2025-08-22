@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: taskmanager-backend:latest
+          image: wildrex/taskmanager-backend:1.0
           imagePullPolicy: IfNotPresent
           env:
             - name: APP_NAME

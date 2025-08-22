@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: taskmanager-ingress
+  namespace: taskmanager
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - taskmanager.feruzlabs.dev
+      secretName: taskmanager-tls
+  rules:
+    - host: taskmanager.feruzlabs.dev
+      http:
+        paths:
+          # - path: /
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: frontend
+          #       port:
+          #         number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000 

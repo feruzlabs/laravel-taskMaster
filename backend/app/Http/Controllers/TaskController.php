@@ -38,6 +38,7 @@ class TaskController extends Controller
         $page = DailyPage::firstOrCreate(['date' => $targetDate]);
 
         $tasks = Task::where('daily_page_id', $page->id)
+            ->where('user_id', $request->user()->id)
             ->with('user:id,username,email')
             ->orderBy('created_at')
             ->get();
